@@ -17,8 +17,35 @@ def calculator(expression: str) -> str:
 
 @tool
 def get_weather(city: str) -> str:
-    """Use ONLY for weather queries"""
-    return f"{city}: Sunny, 30°C"
+    """Get real-time weather using OpenWeather API"""
+
+    try:
+        url = "https://api.openweathermap.org/data/2.5/weather"
+        params = {
+            "q": city,
+            "appid": OPENWEATHER_API_KEY,
+            "units": "metric"
+        }
+
+        response = requests.get(url, params=params)
+        data = response.json()
+
+        if data.get("cod") != 200:
+            return f"[WEATHER ERROR] {data.get('message')}"
+
+        temp = data["main"]["temp"]
+        feels_like = data["main"]["feels_like"]
+        humidity = data["main"]["humidity"]
+        description = data["weather"][0]["description"]
+
+        return (
+            f"[WEATHER RESULT] {city}: {description}, "
+            f"{temp}°C (feels like {feels_like}°C), "
+            f"humidity {humidity}%"
+        )
+
+    except Exception as e:
+        return f"[WEATHER ERROR] {str(e)}"
 
 os.environ["GROQ_API_KEY"] = GROQ_API_KEY
 
