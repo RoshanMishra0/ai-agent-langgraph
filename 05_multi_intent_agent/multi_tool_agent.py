@@ -8,12 +8,17 @@ from langgraph.graph import StateGraph
 from typing import List
 import os
 import json
+import numexpr as ne
 
+   
 @tool
 def calculator(expression: str) -> str:
     """Use ONLY for math calculations like 5+5, 10*3"""
-    return str(eval(expression))
-
+    try:
+        result = ne.evaluate(expression)
+        return f"[CALC RESULT] {result}"
+    except Exception as e:
+        return f"[CALC ERROR] {str(e)}"
 
 @tool
 def get_weather(city: str) -> str:
